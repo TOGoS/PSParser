@@ -1,0 +1,54 @@
+Parser for languages based on my generalized Parenthetical Syntax
+
+  this is a function (
+    argument!,
+    another argument,
+    'a symbol containing non-word characters like +, *, ()',
+    "A literal string!",
+    a symbol with 'only the last word quoted'
+    some expression + some other expression,
+    this one has a : colon in it,
+    this one has a @ at sign in it,
+    "colon is just another infix operator, you know"
+  )
+
+Symbols are parsed as 'phrases' which contain 'words'.
+Characters between single quotes (other than backslash escape sequences) are
+all interpreted literally as part of the word.
+
+Infix operators are configurable.
+
+Ths parser does not attempt to interpret expressions.
+It only converts text to an expression tree.
+
+Expression types:
+
+  Phrase
+    - words : List<Word>
+  Word
+    - text : String
+  LiteralString
+    - quote style : QuoteStyle 
+    - text : String
+  Parameterization
+    - subject : Expression
+    - arguments : List<Expression>
+  InfixExpression
+    - a : Expression
+    - operator : Word
+    - b : Expression 
+
+Number literals are not treated specially.
+They are just words.
+
+It should be possible to easily extend the parser to e.g.
+  - give meaning to different brackets, possibly as string quoting mechanisms.
+  - give meaning to newlines after a root expression
+
+Uses:
+
+  Functional expressions
+
+  SchemaSchema extends this syntax to include 'statements'
+  
+  TOGoSNoise3 could in theory be modified to use this syntax.
