@@ -7,8 +7,8 @@ public class Token implements SourceLocation
 	QuoteStyle quoteStyle;
 	String text;
 	
-	String sourceFilename;
-	int sourceLineNumber, sourceColumnNumber;
+	public final String sourceFilename;
+	public final int sourceLineNumber, sourceColumnNumber;
 	
 	public Token( QuoteStyle quoteStyle, String text, String sourceFilename, int sourceLineNumber, int sourceColumnNumber ) {
 		this.quoteStyle = quoteStyle;
