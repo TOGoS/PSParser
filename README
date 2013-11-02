@@ -21,22 +21,26 @@ Infix operators are configurable.
 Ths parser does not attempt to interpret expressions.
 It only converts text to an expression tree.
 
-Expression types:
+ASTNode subclasses:
 
-  Phrase
-    - words : List<Word>
   Word
     - text : String
+  Phrase
+    - words : List<Word>
   LiteralString
     - quote style : QuoteStyle 
     - text : String
   Parameterization
-    - subject : Expression
+    - subject : ASTNode
     - arguments : List<Expression>
   InfixExpression
     - a : Expression
     - operator : Word
     - b : Expression 
+
+  schemaschema.Statement
+    - head : ASTNode
+    - body : List<Statement>
 
 Number literals are not treated specially.
 They are just words.
@@ -44,6 +48,17 @@ They are just words.
 It should be possible to easily extend the parser to e.g.
   - give meaning to different brackets, possibly as string quoting mechanisms.
   - give meaning to newlines after a root expression
+
+Syntax:
+  
+  root expression = command | expression
+  command = expression block
+  block = "{" command* "}"
+  expression = prefix-operation | infix-operation | function-application | phrase | literal-string
+  prefix-operation = prefix-operator expression
+  infix-operation = expression infix-operator expression
+  function-application = expression "(" expression ")"
+  phrase = word+
 
 Uses:
 
