@@ -37,7 +37,7 @@ public class Tokenizer implements StreamDestination<CharSequence,ScriptError>
 		
 		@Override public TokenizerState data( char c ) throws ScriptError {
 			switch( c ) {
-			case '(': case ')': case '{': case '}': case '\n':
+			case '(': case ')': case '{': case '}': case '\n': case ',': case ';':
 				flush();
 				tokenStream.data(new Token(QuoteStyle.BAREWORD, String.valueOf(c), filename, lineNumber, columnNumber));
 				return initialTokenizerState;
@@ -113,7 +113,7 @@ public class Tokenizer implements StreamDestination<CharSequence,ScriptError>
 		
 		@Override public TokenizerState data( char c ) throws ScriptError {
 			switch( c ) {
-			case '(': case ')': case '{': case '}': case '\n':
+			case '(': case ')': case '{': case '}': case '\n': case ',': case ';':
 				tokenStream.data(new Token(QuoteStyle.BAREWORD, String.valueOf(c), filename, lineNumber, columnNumber));
 				return this;
 			case ' ': case '\t': case '\r':
@@ -133,7 +133,7 @@ public class Tokenizer implements StreamDestination<CharSequence,ScriptError>
 	
 	////
 	
-	protected final StreamDestination<? super Token, ? extends ScriptError> tokenStream;
+	protected final TokenHandler<? super Token, ? extends ScriptError> tokenStream;
 	protected String filename;
 	protected int lineNumber;
 	protected int columnNumber;
@@ -141,7 +141,7 @@ public class Tokenizer implements StreamDestination<CharSequence,ScriptError>
 	
 	////
 	
-	public Tokenizer( StreamDestination<? super Token, ? extends ScriptError> tokenStream, String filename, int lineNumber, int columnNumber ) {
+	public Tokenizer( TokenHandler<? super Token, ? extends ScriptError> tokenStream, String filename, int lineNumber, int columnNumber ) {
 		this.tokenStream = tokenStream;
 		setSourceLocation(filename, lineNumber, columnNumber);
 	}
@@ -171,22 +171,21 @@ public class Tokenizer implements StreamDestination<CharSequence,ScriptError>
 		for( int i=0; i<value.length(); ++i ) {
 			data(value.charAt(i));
 		}
-		throw new UnsupportedOperationException();
 	}
-
+	
 	@Override public void end() throws ScriptError {
 		ts = ts.end();
-		tokenStream.end();
+		tokenStream.end(getSourceLocation());
 	}
 	
+	////
 	
 	public static void main( String[] args ) throws IOException, ScriptError {
-		Tokenizer t = new Tokenizer( new StreamDestination<Token, ScriptError>() {
+		Tokenizer t = new Tokenizer( new TokenHandler<Token, ScriptError>() {
 			@Override public void data( Token value ) throws ScriptError {
 				System.err.println( "{{"+value.text+"}} at "+BaseSourceLocation.toString(value) );
 			}
-			@Override public void end() throws ScriptError {
-			}
+			@Override public void end( SourceLocation sLoc ) throws ScriptError {}
 		}, "standard input", 1, 1);
 		
 		for( int c = System.in.read(); c != -1; c = System.in.read() ) {

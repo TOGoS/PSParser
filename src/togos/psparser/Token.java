@@ -4,8 +4,8 @@ import togos.lang.SourceLocation;
 
 public class Token implements SourceLocation
 {
-	QuoteStyle quoteStyle;
-	String text;
+	public final QuoteStyle quoteStyle;
+	public final String text;
 	
 	public final String sourceFilename;
 	public final int sourceLineNumber, sourceColumnNumber;
@@ -21,4 +21,8 @@ public class Token implements SourceLocation
 	@Override public String getSourceFilename() { return sourceFilename; }
 	@Override public int getSourceLineNumber() { return sourceLineNumber; }
 	@Override public int getSourceColumnNumber() { return sourceColumnNumber; }
+	
+	public String toString() {
+		return text;
+	}
 }
