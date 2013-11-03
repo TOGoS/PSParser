@@ -53,7 +53,8 @@ public class Tokenizer implements StreamDestination<CharSequence,ScriptError>
 		}
 		
 		@Override public TokenizerState end() throws ScriptError {
-			return null;
+			flush();
+			return new EndTokenizerState();
 		}
 	}
 	

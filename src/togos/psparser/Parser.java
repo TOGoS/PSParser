@@ -235,7 +235,6 @@ public class Parser implements TokenHandler<Token, ScriptError>
 		}
 		
 		@Override public ParseState end( SourceLocation sLoc ) throws ScriptError {
-			System.err.println("End after "+toNode());
 			return parent.node(toNode()).end(sLoc);
 		}
 	}
@@ -265,7 +264,22 @@ public class Parser implements TokenHandler<Token, ScriptError>
 		};
 	};
 	
-	InitialParseState rootParseState = new InitialParseState(6, rootNodeHandler);
+	class EndParseState implements ParseState {
+		@Override public ParseState end( SourceLocation sLoc ) throws ScriptError {
+			throw new ParseError("Unexpected EOF after EOF", sLoc);
+		}
+		
+		@Override public ParseState token( Token t ) throws ScriptError {
+			throw new ParseError("Unexpected EOF after EOF", t);
+		}
+
+	}
+	
+	InitialParseState rootParseState = new InitialParseState(6, rootNodeHandler) {
+		@Override public ParseState end( SourceLocation sLoc ) throws ScriptError {
+			return new EndParseState();
+		}
+	};
 	
 	public Parser( Map<String,Integer> prefixOperatorPrecedence, Map<String,Integer> infixOperatorPrecedence ) {
 		this.prefixOperatorPrecedence = prefixOperatorPrecedence;
